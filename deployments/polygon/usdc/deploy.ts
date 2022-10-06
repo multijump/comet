@@ -65,7 +65,8 @@ export default async function deploy(deploymentManager: DeploymentManager, deplo
 
   return {
     ...deployed,
-    bridgeReceiver
+    bridgeReceiver,
+    fxChild
     // bulker
   };
 }
