@@ -20,6 +20,7 @@ import relationConfigMap from './deployments/relations';
 import goerliRelationConfigMap from './deployments/goerli/usdc/relations';
 import mumbaiRelationConfigMap from './deployments/mumbai/usdc/relations';
 import polygonRelationConfigMap from './deployments/polygon/usdc/relations';
+import mainnetRelationConfigMap from './deployments/mainnet/usdc/relations';
 
 task('accounts', 'Prints the list of accounts', async (taskArgs, hre) => {
   for (const account of await hre.ethers.getSigners()) console.log(account.address);
@@ -183,6 +184,9 @@ const config: HardhatUserConfig = {
       },
       polygon: {
         usdc: polygonRelationConfigMap
+      },
+      mainnet: {
+        usdc: mainnetRelationConfigMap
       }
     },
   },
