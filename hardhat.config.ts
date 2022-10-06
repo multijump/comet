@@ -216,6 +216,12 @@ const config: HardhatUserConfig = {
         network: 'mumbai',
         deployment: 'usdc',
         auxiliaryBase: 'goerli'
+      },
+      {
+        name: 'polygon',
+        network: 'polygon',
+        deployment: 'usdc',
+        auxiliaryBase: 'mainnet'
       }
     ],
   },
