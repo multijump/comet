@@ -83,7 +83,7 @@ describe.only('Polygon bulker', function () {
     // Alice supplies 10 ETH through the bulker
     const supplyAmount = exp(10, 18);
     const supplyEthCalldata = ethers.utils.defaultAbiCoder.encode(['address', 'address', 'uint'], [comet.address, alice.address, supplyAmount]);
-    await bulker.connect(alice).invoke([await bulker.ACTION_SUPPLY_ETH()], [supplyEthCalldata], { value: supplyAmount });
+    await bulker.connect(alice).invoke([await bulker.ACTION_SUPPLY_NATIVE_TOKEN()], [supplyEthCalldata], { value: supplyAmount });
 
     expect(await comet.collateralBalanceOf(alice.address, WETH.address)).to.be.equal(supplyAmount);
   });
@@ -104,7 +104,7 @@ describe.only('Polygon bulker', function () {
     const aliceBalanceBefore = await alice.getBalance();
     const supplyAmount = exp(10, 18);
     const supplyEthCalldata = ethers.utils.defaultAbiCoder.encode(['address', 'address', 'uint'], [comet.address, alice.address, supplyAmount]);
-    const txn = await wait(bulker.connect(alice).invoke([await bulker.ACTION_SUPPLY_ETH()], [supplyEthCalldata], { value: supplyAmount * 2n }));
+    const txn = await wait(bulker.connect(alice).invoke([await bulker.ACTION_SUPPLY_NATIVE_TOKEN()], [supplyEthCalldata], { value: supplyAmount * 2n }));
     const aliceBalanceAfter = await alice.getBalance();
 
     expect(await comet.collateralBalanceOf(alice.address, WETH.address)).to.be.equal(supplyAmount);
@@ -126,7 +126,7 @@ describe.only('Polygon bulker', function () {
     // Alice supplies 10 ETH through the bulker but only sends 5 ETH
     const supplyAmount = exp(10, 18);
     const supplyEthCalldata = ethers.utils.defaultAbiCoder.encode(['address', 'address', 'uint'], [comet.address, alice.address, supplyAmount]);
-    await expect(bulker.connect(alice).invoke([await bulker.ACTION_SUPPLY_ETH()], [supplyEthCalldata], { value: supplyAmount / 2n }))
+    await expect(bulker.connect(alice).invoke([await bulker.ACTION_SUPPLY_NATIVE_TOKEN()], [supplyEthCalldata], { value: supplyAmount / 2n }))
       .to.be.revertedWith('code 0x11 (Arithmetic operation underflowed or overflowed outside of an unchecked block)');
   });
 
@@ -275,7 +275,7 @@ describe.only('Polygon bulker', function () {
     // Alice supplies 10 ETH through the bulker
     const aliceBalanceBefore = await alice.getBalance();
     const withdrawEthCalldata = ethers.utils.defaultAbiCoder.encode(['address', 'address', 'uint'], [comet.address, alice.address, withdrawAmount]);
-    const txn = await wait(bulker.connect(alice).invoke([await bulker.ACTION_WITHDRAW_ETH()], [withdrawEthCalldata]));
+    const txn = await wait(bulker.connect(alice).invoke([await bulker.ACTION_WITHDRAW_NATIVE_TOKEN()], [withdrawEthCalldata]));
     const aliceBalanceAfter = await alice.getBalance();
 
     expect(await comet.collateralBalanceOf(alice.address, WETH.address)).to.be.equal(0);
@@ -359,7 +359,7 @@ describe.only('Polygon bulker', function () {
     const { bulker } = bulkerInfo;
 
     const withdrawEthCalldata = ethers.utils.defaultAbiCoder.encode(['address', 'address', 'uint'], [comet.address, alice.address, 1]);
-    await expect(bulker.connect(alice).invoke([await bulker.ACTION_WITHDRAW_ETH()], [withdrawEthCalldata]))
+    await expect(bulker.connect(alice).invoke([await bulker.ACTION_WITHDRAW_NATIVE_TOKEN()], [withdrawEthCalldata]))
       .to.be.reverted; // Should revert with "custom error 'Unauthorized()'"
   });
 
@@ -489,7 +489,7 @@ describe.only('bulker multiple actions', function () {
     const supplyAliceEthCalldata = ethers.utils.defaultAbiCoder.encode(['address', 'address', 'uint'], [comet.address, alice.address, supplyAmount / 2n]);
     const supplyBobEthCalldata = ethers.utils.defaultAbiCoder.encode(['address', 'address', 'uint'], [comet.address, bob.address, supplyAmount / 2n]);
     await bulker.connect(alice).invoke(
-      [await bulker.ACTION_SUPPLY_ETH(), await bulker.ACTION_SUPPLY_ETH()],
+      [await bulker.ACTION_SUPPLY_NATIVE_TOKEN(), await bulker.ACTION_SUPPLY_NATIVE_TOKEN()],
       [supplyAliceEthCalldata, supplyBobEthCalldata],
       { value: supplyAmount }
     );

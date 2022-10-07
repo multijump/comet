@@ -18,10 +18,10 @@ contract PolygonBulker {
 
     /** Actions **/
     uint public constant ACTION_SUPPLY_ASSET = 1;
-    uint public constant ACTION_SUPPLY_ETH = 2;
+    uint public constant ACTION_SUPPLY_NATIVE_TOKEN = 2;
     uint public constant ACTION_TRANSFER_ASSET = 3;
     uint public constant ACTION_WITHDRAW_ASSET = 4;
-    uint public constant ACTION_WITHDRAW_ETH = 5;
+    uint public constant ACTION_WITHDRAW_NATIVE_TOKEN = 5;
     uint public constant ACTION_CLAIM_REWARD = 6;
 
     /** Custom errors **/
@@ -35,7 +35,7 @@ contract PolygonBulker {
     }
 
     /**
-     * @notice Fallback for receiving ether. Needed for ACTION_WITHDRAW_ETH.
+     * @notice Fallback for receiving ether. Needed for ACTION_WITHDRAW_NATIVE_TOKEN.
      */
     receive() external payable {}
 
@@ -77,7 +77,7 @@ contract PolygonBulker {
             if (action == ACTION_SUPPLY_ASSET) {
                 (address comet, address to, address asset, uint amount) = abi.decode(data[i], (address, address, address, uint));
                 supplyTo(comet, to, asset, amount);
-            } else if (action == ACTION_SUPPLY_ETH) {
+            } else if (action == ACTION_SUPPLY_NATIVE_TOKEN) {
                 (address comet, address to, uint amount) = abi.decode(data[i], (address, address, uint));
                 unusedEth -= amount;
                 supplyEthTo(comet, to, amount);
@@ -87,7 +87,7 @@ contract PolygonBulker {
             } else if (action == ACTION_WITHDRAW_ASSET) {
                 (address comet, address to, address asset, uint amount) = abi.decode(data[i], (address, address, address, uint));
                 withdrawTo(comet, to, asset, amount);
-            } else if (action == ACTION_WITHDRAW_ETH) {
+            } else if (action == ACTION_WITHDRAW_NATIVE_TOKEN) {
                 (address comet, address to, uint amount) = abi.decode(data[i], (address, address, uint));
                 withdrawEthTo(comet, to, amount);
             } else if (action == ACTION_CLAIM_REWARD) {
