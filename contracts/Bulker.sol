@@ -3,7 +3,7 @@ pragma solidity 0.8.15;
 
 import "./CometInterface.sol";
 import "./ERC20.sol";
-import "./IWETH9.sol";
+import "./IWrappedNativeToken.sol";
 
 interface IClaimable {
     function claim(address comet, address src, bool shouldAccrue) external;
@@ -14,28 +14,28 @@ interface IClaimable {
 contract Bulker {
     /** General configuration constants **/
     address public immutable admin;
-    address payable public immutable weth;
+    address payable public immutable wrappedNativeAsset;
 
     /** Actions **/
     uint public constant ACTION_SUPPLY_ASSET = 1;
-    uint public constant ACTION_SUPPLY_ETH = 2;
+    uint public constant ACTION_SUPPLY_NATIVE_ASSET = 2;
     uint public constant ACTION_TRANSFER_ASSET = 3;
     uint public constant ACTION_WITHDRAW_ASSET = 4;
-    uint public constant ACTION_WITHDRAW_ETH = 5;
+    uint public constant ACTION_WITHDRAW_NATIVE_ASSET = 5;
     uint public constant ACTION_CLAIM_REWARD = 6;
 
     /** Custom errors **/
     error InvalidArgument();
-    error FailedToSendEther();
+    error FailedToSendNativeAsset();
     error Unauthorized();
 
-    constructor(address admin_, address payable weth_) {
+    constructor(address admin_, address payable wrappedNativeAsset_) {
         admin = admin_;
-        weth = weth_;
+        wrappedNativeAsset = wrappedNativeAsset_;
     }
 
     /**
-     * @notice Fallback for receiving ether. Needed for ACTION_WITHDRAW_ETH.
+     * @notice Fallback for receiving native asset. Needed for ACTION_WITHDRAW_NATIVE_ASSET.
      */
     receive() external payable {}
 
@@ -52,15 +52,15 @@ contract Bulker {
     }
 
     /**
-     * @notice A public function to sweep accidental ETH transfers to this contract. Tokens are sent to admin (Timelock)
+     * @notice A public function to sweep accidental native asset transfers to this contract. Tokens are sent to admin (Timelock)
      * @param recipient The address that will receive the swept funds
      */
-    function sweepEth(address recipient) external {
+    function sweepNativeAsset(address recipient) external {
         if (msg.sender != admin) revert Unauthorized();
 
         uint256 balance = address(this).balance;
         (bool success, ) = recipient.call{ value: balance }("");
-        if (!success) revert FailedToSendEther();
+        if (!success) revert FailedToSendNativeAsset();
     }
 
     /**
@@ -71,25 +71,25 @@ contract Bulker {
     function invoke(uint[] calldata actions, bytes[] calldata data) external payable {
         if (actions.length != data.length) revert InvalidArgument();
 
-        uint unusedEth = msg.value;
+        uint unusedNativeAsset = msg.value;
         for (uint i = 0; i < actions.length; ) {
             uint action = actions[i];
             if (action == ACTION_SUPPLY_ASSET) {
                 (address comet, address to, address asset, uint amount) = abi.decode(data[i], (address, address, address, uint));
                 supplyTo(comet, to, asset, amount);
-            } else if (action == ACTION_SUPPLY_ETH) {
+            } else if (action == ACTION_SUPPLY_NATIVE_ASSET) {
                 (address comet, address to, uint amount) = abi.decode(data[i], (address, address, uint));
-                unusedEth -= amount;
-                supplyEthTo(comet, to, amount);
+                unusedNativeAsset -= amount;
+                supplyNativeAssetTo(comet, to, amount);
             } else if (action == ACTION_TRANSFER_ASSET) {
                 (address comet, address to, address asset, uint amount) = abi.decode(data[i], (address, address, address, uint));
                 transferTo(comet, to, asset, amount);
             } else if (action == ACTION_WITHDRAW_ASSET) {
                 (address comet, address to, address asset, uint amount) = abi.decode(data[i], (address, address, address, uint));
                 withdrawTo(comet, to, asset, amount);
-            } else if (action == ACTION_WITHDRAW_ETH) {
+            } else if (action == ACTION_WITHDRAW_NATIVE_ASSET) {
                 (address comet, address to, uint amount) = abi.decode(data[i], (address, address, uint));
-                withdrawEthTo(comet, to, amount);
+                withdrawNativeAssetTo(comet, to, amount);
             } else if (action == ACTION_CLAIM_REWARD) {
                 (address comet, address rewards, address src, bool shouldAccrue) = abi.decode(data[i], (address, address, address, bool));
                 claimReward(comet, rewards, src, shouldAccrue);
@@ -97,10 +97,10 @@ contract Bulker {
             unchecked { i++; }
         }
 
-        // Refund unused ETH back to msg.sender
-        if (unusedEth > 0) {
-            (bool success, ) = msg.sender.call{ value: unusedEth }("");
-            if (!success) revert FailedToSendEther();
+        // Refund unused native asset back to msg.sender
+        if (unusedNativeAsset > 0) {
+            (bool success, ) = msg.sender.call{ value: unusedNativeAsset }("");
+            if (!success) revert FailedToSendNativeAsset();
         }
     }
 
@@ -112,12 +112,12 @@ contract Bulker {
     }
 
     /**
-     * @notice Wraps ETH and supplies WETH to a user in Comet
+     * @notice Wraps native asset and supplies wrapped native asset to a user in Comet
      */
-    function supplyEthTo(address comet, address to, uint amount) internal {
-        IWETH9(weth).deposit{ value: amount }();
-        IWETH9(weth).approve(comet, amount);
-        CometInterface(comet).supplyFrom(address(this), to, weth, amount);
+    function supplyNativeAssetTo(address comet, address to, uint amount) internal {
+        IWrappedNativeToken(wrappedNativeAsset).deposit{ value: amount }();
+        IWrappedNativeToken(wrappedNativeAsset).approve(comet, amount);
+        CometInterface(comet).supplyFrom(address(this), to, wrappedNativeAsset, amount);
     }
 
     /**
@@ -135,13 +135,13 @@ contract Bulker {
     }
 
     /**
-     * @notice Withdraws WETH from Comet to a user after unwrapping it to ETH
+     * @notice Withdraws wrapped native asset from Comet to a user after unwrapping it to native asset
      */
-    function withdrawEthTo(address comet, address to, uint amount) internal {
-        CometInterface(comet).withdrawFrom(msg.sender, address(this), weth, amount);
-        IWETH9(weth).withdraw(amount);
+    function withdrawNativeAssetTo(address comet, address to, uint amount) internal {
+        CometInterface(comet).withdrawFrom(msg.sender, address(this), wrappedNativeAsset, amount);
+        IWrappedNativeToken(wrappedNativeAsset).withdraw(amount);
         (bool success, ) = to.call{ value: amount }("");
-        if (!success) revert FailedToSendEther();
+        if (!success) revert FailedToSendNativeAsset();
     }
 
     /**

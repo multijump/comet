@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: BUSL-1.1
 pragma solidity 0.8.15;
 
-interface IWETH9 {
+interface IWrappedNativeToken {
     function name() external view returns (string memory);
 
     function symbol() external view returns (string memory);
