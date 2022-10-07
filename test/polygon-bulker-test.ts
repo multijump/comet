@@ -1,4 +1,4 @@
-import { baseBalanceOf, ethers, expect, exp, makeProtocol, wait, makeBulker, defaultAssets, getGasUsed, makeRewards, fastForward } from './helpers';
+import { baseBalanceOf, ethers, expect, exp, makeProtocol, wait, makePolygonBulker, defaultAssets, getGasUsed, makeRewards, fastForward } from './helpers';
 import { FaucetWETH__factory } from '../build/types';
 
 // XXX Improve the "no permission" tests that should expect a custom error when
@@ -7,7 +7,7 @@ describe.only('Polygon bulker', function () {
   it('supply base asset', async () => {
     const protocol = await makeProtocol({});
     const { comet, tokens: { USDC, WETH }, users: [alice] } = protocol;
-    const bulkerInfo = await makeBulker({ weth: WETH.address });
+    const bulkerInfo = await makePolygonBulker({ weth: WETH.address });
     const { bulker } = bulkerInfo;
 
     // Alice approves 10 USDC to Comet
@@ -28,7 +28,7 @@ describe.only('Polygon bulker', function () {
   it('supply collateral asset', async () => {
     const protocol = await makeProtocol({});
     const { comet, tokens: { COMP, WETH }, users: [alice] } = protocol;
-    const bulkerInfo = await makeBulker({ weth: WETH.address });
+    const bulkerInfo = await makePolygonBulker({ weth: WETH.address });
     const { bulker } = bulkerInfo;
 
     // Alice approves 10 COMP to Comet
@@ -49,7 +49,7 @@ describe.only('Polygon bulker', function () {
   it('supply collateral asset to a different account', async () => {
     const protocol = await makeProtocol({});
     const { comet, tokens: { COMP, WETH }, users: [alice, bob] } = protocol;
-    const bulkerInfo = await makeBulker({ weth: WETH.address });
+    const bulkerInfo = await makePolygonBulker({ weth: WETH.address });
     const { bulker } = bulkerInfo;
 
     // Alice approves 10 COMP to Comet
@@ -75,7 +75,7 @@ describe.only('Polygon bulker', function () {
       })
     });
     const { comet, tokens: { WETH }, users: [alice] } = protocol;
-    const bulkerInfo = await makeBulker({ weth: WETH.address });
+    const bulkerInfo = await makePolygonBulker({ weth: WETH.address });
     const { bulker } = bulkerInfo;
 
     // No approval is actually needed on the supplyEth action!
@@ -95,7 +95,7 @@ describe.only('Polygon bulker', function () {
       })
     });
     const { comet, tokens: { WETH }, users: [alice] } = protocol;
-    const bulkerInfo = await makeBulker({ weth: WETH.address });
+    const bulkerInfo = await makePolygonBulker({ weth: WETH.address });
     const { bulker } = bulkerInfo;
 
     // No approval is actually needed on the supplyEth action!
@@ -118,7 +118,7 @@ describe.only('Polygon bulker', function () {
       })
     });
     const { comet, tokens: { WETH }, users: [alice] } = protocol;
-    const bulkerInfo = await makeBulker({ weth: WETH.address });
+    const bulkerInfo = await makePolygonBulker({ weth: WETH.address });
     const { bulker } = bulkerInfo;
 
     // No approval is actually needed on the supplyEth action!
@@ -133,7 +133,7 @@ describe.only('Polygon bulker', function () {
   it('transfer base asset', async () => {
     const protocol = await makeProtocol({});
     const { comet, tokens: { USDC, WETH }, users: [alice, bob] } = protocol;
-    const bulkerInfo = await makeBulker({ weth: WETH.address });
+    const bulkerInfo = await makePolygonBulker({ weth: WETH.address });
     const { bulker } = bulkerInfo;
 
     const transferAmount = exp(10, 6);
@@ -153,7 +153,7 @@ describe.only('Polygon bulker', function () {
   it('transfer collateral asset', async () => {
     const protocol = await makeProtocol({});
     const { comet, tokens: { COMP, WETH }, users: [alice, bob] } = protocol;
-    const bulkerInfo = await makeBulker({ weth: WETH.address });
+    const bulkerInfo = await makePolygonBulker({ weth: WETH.address });
     const { bulker } = bulkerInfo;
 
     const transferAmount = exp(10, 18);
@@ -173,7 +173,7 @@ describe.only('Polygon bulker', function () {
   it('withdraw base asset', async () => {
     const protocol = await makeProtocol({});
     const { comet, tokens: { USDC, WETH }, users: [alice] } = protocol;
-    const bulkerInfo = await makeBulker({ weth: WETH.address });
+    const bulkerInfo = await makePolygonBulker({ weth: WETH.address });
     const { bulker } = bulkerInfo;
 
     // Allocate base asset to Comet and Alice's Comet balance
@@ -199,7 +199,7 @@ describe.only('Polygon bulker', function () {
   it('withdraw collateral asset', async () => {
     const protocol = await makeProtocol({});
     const { comet, tokens: { COMP, WETH }, users: [alice] } = protocol;
-    const bulkerInfo = await makeBulker({ weth: WETH.address });
+    const bulkerInfo = await makePolygonBulker({ weth: WETH.address });
     const { bulker } = bulkerInfo;
 
     // Allocate collateral asset to Comet and Alice's Comet balance
@@ -225,7 +225,7 @@ describe.only('Polygon bulker', function () {
   it('withdraw collateral asset to a different account', async () => {
     const protocol = await makeProtocol({});
     const { comet, tokens: { COMP, WETH }, users: [alice, bob] } = protocol;
-    const bulkerInfo = await makeBulker({ weth: WETH.address });
+    const bulkerInfo = await makePolygonBulker({ weth: WETH.address });
     const { bulker } = bulkerInfo;
 
     // Allocate collateral asset to Comet and Alice's Comet balance
@@ -256,7 +256,7 @@ describe.only('Polygon bulker', function () {
       })
     });
     const { comet, tokens: { WETH }, users: [alice], governor } = protocol;
-    const bulkerInfo = await makeBulker({ weth: WETH.address });
+    const bulkerInfo = await makePolygonBulker({ weth: WETH.address });
     const { bulker } = bulkerInfo;
 
     // Allocate WETH to Comet and Alice's Comet balance
@@ -293,7 +293,7 @@ describe.only('Polygon bulker', function () {
       users: [alice],
     } = protocol;
     const { rewards } = await makeRewards({ governor, configs: [[comet, COMP]] });
-    const bulkerInfo = await makeBulker({ weth: WETH.address });
+    const bulkerInfo = await makePolygonBulker({ weth: WETH.address });
     const { bulker } = bulkerInfo;
 
     // Allocate and approve transfers
@@ -318,7 +318,7 @@ describe.only('Polygon bulker', function () {
   it('reverts on supply asset if no permission granted to bulker', async () => {
     const protocol = await makeProtocol({});
     const { comet, tokens: { USDC, WETH }, users: [alice] } = protocol;
-    const bulkerInfo = await makeBulker({ weth: WETH.address });
+    const bulkerInfo = await makePolygonBulker({ weth: WETH.address });
     const { bulker } = bulkerInfo;
 
     const supplyAssetCalldata = ethers.utils.defaultAbiCoder.encode(['address', 'address', 'address', 'uint'], [comet.address, alice.address, USDC.address, 1]);
@@ -329,7 +329,7 @@ describe.only('Polygon bulker', function () {
   it('reverts on transfer asset if no permission granted to bulker', async () => {
     const protocol = await makeProtocol({});
     const { comet, tokens: { COMP, WETH }, users: [alice, bob] } = protocol;
-    const bulkerInfo = await makeBulker({ weth: WETH.address });
+    const bulkerInfo = await makePolygonBulker({ weth: WETH.address });
     const { bulker } = bulkerInfo;
 
     const transferAssetCalldata = ethers.utils.defaultAbiCoder.encode(['address', 'address', 'address', 'uint'], [comet.address, bob.address, COMP.address, 1]);
@@ -340,7 +340,7 @@ describe.only('Polygon bulker', function () {
   it('reverts on withdraw asset if no permission granted to bulker', async () => {
     const protocol = await makeProtocol({});
     const { comet, tokens: { COMP, WETH }, users: [alice] } = protocol;
-    const bulkerInfo = await makeBulker({ weth: WETH.address });
+    const bulkerInfo = await makePolygonBulker({ weth: WETH.address });
     const { bulker } = bulkerInfo;
 
     const withdrawAssetCalldata = ethers.utils.defaultAbiCoder.encode(['address', 'address', 'address', 'uint'], [comet.address, alice.address, COMP.address, 1]);
@@ -355,7 +355,7 @@ describe.only('Polygon bulker', function () {
       })
     });
     const { comet, tokens: { WETH }, users: [alice] } = protocol;
-    const bulkerInfo = await makeBulker({ weth: WETH.address });
+    const bulkerInfo = await makePolygonBulker({ weth: WETH.address });
     const { bulker } = bulkerInfo;
 
     const withdrawEthCalldata = ethers.utils.defaultAbiCoder.encode(['address', 'address', 'uint'], [comet.address, alice.address, 1]);
@@ -367,7 +367,7 @@ describe.only('Polygon bulker', function () {
     it('sweep ERC20 token', async () => {
       const protocol = await makeProtocol({});
       const { governor, tokens: { USDC, WETH }, users: [alice] } = protocol;
-      const bulkerInfo = await makeBulker({ admin: governor, weth: WETH.address });
+      const bulkerInfo = await makePolygonBulker({ admin: governor, weth: WETH.address });
       const { bulker } = bulkerInfo;
 
       // Alice "accidentally" sends 10 USDC to the Bulker
@@ -391,7 +391,7 @@ describe.only('Polygon bulker', function () {
     it('sweep ETH', async () => {
       const protocol = await makeProtocol({});
       const { governor, tokens: { WETH }, users: [alice] } = protocol;
-      const bulkerInfo = await makeBulker({ admin: governor, weth: WETH.address });
+      const bulkerInfo = await makePolygonBulker({ admin: governor, weth: WETH.address });
       const { bulker } = bulkerInfo;
 
       // Alice "accidentally" sends 1 ETH to the Bulker
@@ -414,7 +414,7 @@ describe.only('Polygon bulker', function () {
     it('reverts if sweepToken is called by non-admin', async () => {
       const protocol = await makeProtocol({});
       const { governor, tokens: { USDC, WETH }, users: [alice] } = protocol;
-      const bulkerInfo = await makeBulker({ admin: governor, weth: WETH.address });
+      const bulkerInfo = await makePolygonBulker({ admin: governor, weth: WETH.address });
       const { bulker } = bulkerInfo;
 
       // Alice sweeps tokens
@@ -425,7 +425,7 @@ describe.only('Polygon bulker', function () {
     it('reverts if sweepEth is called by non-admin', async () => {
       const protocol = await makeProtocol({});
       const { governor, tokens: { WETH }, users: [alice] } = protocol;
-      const bulkerInfo = await makeBulker({ admin: governor, weth: WETH.address });
+      const bulkerInfo = await makePolygonBulker({ admin: governor, weth: WETH.address });
       const { bulker } = bulkerInfo;
 
       // Alice sweeps ETH
@@ -435,11 +435,11 @@ describe.only('Polygon bulker', function () {
   });
 });
 
-describe('bulker multiple actions', function () {
+describe.only('bulker multiple actions', function () {
   it('supply collateral + borrow base asset', async () => {
     const protocol = await makeProtocol({});
     const { comet, tokens: { USDC, COMP, WETH }, users: [alice] } = protocol;
-    const bulkerInfo = await makeBulker({ weth: WETH.address });
+    const bulkerInfo = await makePolygonBulker({ weth: WETH.address });
     const { bulker } = bulkerInfo;
 
     // Allocate base asset to Comet
@@ -479,7 +479,7 @@ describe('bulker multiple actions', function () {
       })
     });
     const { comet, tokens: { WETH }, users: [alice, bob] } = protocol;
-    const bulkerInfo = await makeBulker({ weth: WETH.address });
+    const bulkerInfo = await makePolygonBulker({ weth: WETH.address });
     const { bulker } = bulkerInfo;
 
     // No approval is actually needed on the supplyEth action!
