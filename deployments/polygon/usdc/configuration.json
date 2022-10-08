@@ -31,7 +31,7 @@
       "borrowCF": 0.825,
       "liquidateCF": 0.895,
       "liquidationFactor": 0.95,
-      "supplyCap": "0e18"
+      "supplyCap": "500000e18"
     },
     "WBTC": {
       "address": "0x1bfd67037b42cf73acf2047067bd4f2c47d9bfd6",
@@ -40,7 +40,7 @@
       "borrowCF": 0.70,
       "liquidateCF": 0.77,
       "liquidationFactor": 0.95,
-      "supplyCap": "0e8"
+      "supplyCap": "500000e18"
     },
     "WMATIC": {
       "address": "0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270",
@@ -49,7 +49,7 @@
       "borrowCF": 0.825,
       "liquidateCF": 0.895,
       "liquidationFactor": 0.95,
-      "supplyCap": "0e18"
+      "supplyCap": "500000e18"
     },
     "DAI": {
       "address": "0x8f3cf7ad23cd3cadbd9735aff958023239c6a063",
@@ -58,7 +58,7 @@
       "borrowCF": 0.825,
       "liquidateCF": 0.895,
       "liquidationFactor": 0.95,
-      "supplyCap": "0e18"
+      "supplyCap": "500000e18"
     },
     "USDT": {
       "address": "0xc2132d05d31c914a87c6611c10748aeb04b58e8f",
@@ -67,7 +67,7 @@
       "borrowCF": 0.825,
       "liquidateCF": 0.895,
       "liquidationFactor": 0.95,
-      "supplyCap": "0e18"
+      "supplyCap": "500000e18"
     }
   }
 }
