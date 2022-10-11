@@ -9,13 +9,15 @@ export async function isBridgeProposal(
   const bridgeNetwork = bridgeDeploymentManager.network;
   switch (bridgeNetwork) {
     case 'mumbai':
-    case 'polygon':
+    case 'polygon': {
       const governor = await governanceDeploymentManager.getContractOrThrow('governor');
       const fxChild = await bridgeDeploymentManager.getContractOrThrow('fxChild');
       const { targets } = await governor.getActions(openProposal.id);
       return targets.includes(fxChild.address);
-    default:
+    }
+    default: {
       const tag = `[${bridgeNetwork} -> ${governanceDeploymentManager.network}]`;
       throw new Error(`${tag} Unable to determine whether to relay Proposal ${openProposal.id}`);
+    }
   }
 }
