@@ -59,7 +59,7 @@ export default async function deploy(deploymentManager: DeploymentManager, deplo
   const bulker = await deploymentManager.deploy(
     'bulker',
     'Bulker.sol',
-    [await comet.governor(), WETH.address]
+    [await comet.governor(), WMATIC.address]
   );
 
   return {
