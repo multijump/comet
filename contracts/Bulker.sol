@@ -3,7 +3,7 @@ pragma solidity 0.8.15;
 
 import "./CometInterface.sol";
 import "./ERC20.sol";
-import "./IWrappedNativeToken.sol";
+import "./IWrappedNativeAsset.sol";
 
 interface IClaimable {
     function claim(address comet, address src, bool shouldAccrue) external;
@@ -115,8 +115,8 @@ contract Bulker {
      * @notice Wraps native asset and supplies wrapped native asset to a user in Comet
      */
     function supplyNativeAssetTo(address comet, address to, uint amount) internal {
-        IWrappedNativeToken(wrappedNativeAsset).deposit{ value: amount }();
-        IWrappedNativeToken(wrappedNativeAsset).approve(comet, amount);
+        IWrappedNativeAsset(wrappedNativeAsset).deposit{ value: amount }();
+        IWrappedNativeAsset(wrappedNativeAsset).approve(comet, amount);
         CometInterface(comet).supplyFrom(address(this), to, wrappedNativeAsset, amount);
     }
 
@@ -139,7 +139,7 @@ contract Bulker {
      */
     function withdrawNativeAssetTo(address comet, address to, uint amount) internal {
         CometInterface(comet).withdrawFrom(msg.sender, address(this), wrappedNativeAsset, amount);
-        IWrappedNativeToken(wrappedNativeAsset).withdraw(amount);
+        IWrappedNativeAsset(wrappedNativeAsset).withdraw(amount);
         (bool success, ) = to.call{ value: amount }("");
         if (!success) revert FailedToSendNativeAsset();
     }
