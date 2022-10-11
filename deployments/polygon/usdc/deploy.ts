@@ -44,8 +44,8 @@ export default async function deploy(deploymentManager: DeploymentManager, deplo
     async () => {
       trace(`Initializing BridgeReceiver`);
       await bridgeReceiver.initialize(
-        MAINNET_TIMELOCK,       // govTimelock
-        localTimelock.address  // localTimelock
+        MAINNET_TIMELOCK,     // govTimelock
+        localTimelock.address // localTimelock
       );
       trace(`BridgeReceiver initialized`);
     }
@@ -55,18 +55,17 @@ export default async function deploy(deploymentManager: DeploymentManager, deplo
   const deployed = await deployComet(deploymentManager, deploySpec);
   const { comet } = deployed;
 
-  // Deploy Polygon Bulker
-  // XXX implement Polygon Bulker
-  // const bulker = await deploymentManager.deploy(
-  //   'bulker',
-  //   'Bulker.sol',
-  //   [await comet.governor(), WETH.address]
-  // );
+  // Deploy Bulker
+  const bulker = await deploymentManager.deploy(
+    'bulker',
+    'Bulker.sol',
+    [await comet.governor(), WETH.address]
+  );
 
   return {
     ...deployed,
     bridgeReceiver,
-    fxChild
-    // bulker
+    fxChild,
+    bulker
   };
 }
