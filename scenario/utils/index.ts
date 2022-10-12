@@ -258,6 +258,10 @@ export async function isBulkerSupported(ctx: CometContext): Promise<boolean> {
   return bulker == null ? false : true;
 }
 
+export function isInNetwork(ctx: CometContext, networks: string[]): boolean {
+  return networks.includes(ctx.world.base.network);
+}
+
 export async function isRewardSupported(ctx: CometContext): Promise<boolean> {
   const rewards = await ctx.getRewards();
   const comet = await ctx.getComet();
