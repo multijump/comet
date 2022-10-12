@@ -13,9 +13,9 @@ scenario(
       $comet: { $base: 5000 },
     },
   },
-  async ({ comet, actors, bulker }, context) => {
+  async ({ comet, actors, assets, bulker }, context) => {
     const { albert, betty } = actors;
-    const wrappedNativeAsset = await bulker.wrappedNativeAsset();
+    const { WETH } = assets;
     const baseAssetAddress = await comet.baseToken();
     const baseAsset = context.getAssetByAddress(baseAssetAddress);
     const baseScale = (await comet.baseScale()).toBigInt();
@@ -59,8 +59,8 @@ scenario(
       await bulker.ACTION_SUPPLY_ASSET(),
       await bulker.ACTION_WITHDRAW_ASSET(),
       await bulker.ACTION_TRANSFER_ASSET(),
-      await bulker.ACTION_SUPPLY_NATIVE_ASSET(),
-      await bulker.ACTION_WITHDRAW_NATIVE_ASSET(),
+      await bulker.ACTION_SUPPLY_ETH(),
+      await bulker.ACTION_WITHDRAW_ETH(),
     ];
     const txn = await albert.invoke({ actions, calldata }, { value: toSupplyEth });
 
@@ -72,7 +72,7 @@ scenario(
     expect(await baseAsset.balanceOf(albert.address)).to.be.equal(toBorrowBase);
     expect(await comet.balanceOf(betty.address)).to.be.equal(baseTransferred);
     expect(await comet.borrowBalanceOf(albert.address)).to.be.equal(toBorrowBase + toTransferBase);
-    expect(await comet.collateralBalanceOf(albert.address, wrappedNativeAsset)).to.be.equal(toSupplyEth - toWithdrawEth);
+    expect(await comet.collateralBalanceOf(albert.address, WETH.address)).to.be.equal(toSupplyEth - toWithdrawEth);
 
     return txn; // return txn to measure gas
   }
@@ -87,9 +87,9 @@ scenario(
       $comet: { $base: 5000 },
     },
   },
-  async ({ comet, actors, rewards, bulker }, context, world) => {
+  async ({ comet, actors, assets, rewards, bulker }, context, world) => {
     const { albert, betty } = actors;
-    const wrappedNativeAsset = await bulker.wrappedNativeAsset();
+    const { WETH } = assets;
     const baseAssetAddress = await comet.baseToken();
     const baseAsset = context.getAssetByAddress(baseAssetAddress);
     const baseScale = (await comet.baseScale()).toBigInt();
@@ -148,8 +148,8 @@ scenario(
       await bulker.ACTION_SUPPLY_ASSET(),
       await bulker.ACTION_WITHDRAW_ASSET(),
       await bulker.ACTION_TRANSFER_ASSET(),
-      await bulker.ACTION_SUPPLY_NATIVE_ASSET(),
-      await bulker.ACTION_WITHDRAW_NATIVE_ASSET(),
+      await bulker.ACTION_SUPPLY_ETH(),
+      await bulker.ACTION_WITHDRAW_ETH(),
       await bulker.ACTION_CLAIM_REWARD(),
     ];
     const txn = await albert.invoke({ actions, calldata }, { value: toSupplyEth });
@@ -162,7 +162,7 @@ scenario(
     expect(await baseAsset.balanceOf(albert.address)).to.be.equal(toBorrowBase);
     expect(await comet.balanceOf(betty.address)).to.be.equal(baseTransferred);
     expect(await comet.borrowBalanceOf(albert.address)).to.be.equal(toBorrowBase + toTransferBase);
-    expect(await comet.collateralBalanceOf(albert.address, wrappedNativeAsset)).to.be.equal(toSupplyEth - toWithdrawEth);
+    expect(await comet.collateralBalanceOf(albert.address, WETH.address)).to.be.equal(toSupplyEth - toWithdrawEth);
     expect(await albert.getErc20Balance(rewardTokenAddress)).to.be.equal(expectedFinalRewardBalance);
 
     return txn; // return txn to measure gas
